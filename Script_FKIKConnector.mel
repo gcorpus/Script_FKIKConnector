@@ -1,0 +1,43 @@
+//Conexión de los nodos FK e IK de rotación y translación en combinación con un nodo blend.
+
+string $names[] = `ls -selection`;
+int $numObj = size($names);
+
+
+for ($n = 0;$n < $numObj; $n++)
+{
+    
+    int $sizeName = size($names[$n]);
+    int $endCharacterRotate = $sizeName - 7;
+    string $prefix = `substring $names[$n] 1 $endCharacterRotate`;
+ 
+    
+    shadingNode -asUtility blendColors;
+    rename `ls -selection` ($prefix + "_rot_FKIKChoice");
+    
+    shadingNode -asUtility blendColors;
+    rename `ls -selection` ($prefix + "_trans_FKIKChoice");
+    
+    //ROTATE
+    
+    connectAttr -f ($prefix + "_IK_JNT.rotate") ($prefix + "_rot_FKIKChoice.color1");
+    connectAttr -f ($prefix + "_FK_JNT.rotate") ($prefix + "_rot_FKIKChoice.color2");
+    connectAttr -f ($prefix + "_rot_FKIKChoice.output") ($prefix + "_main_JNT.rotate");
+    
+    //TRANSLATE
+    
+    connectAttr -f ($prefix + "_IK_JNT.translate") ($prefix + "_trans_FKIKChoice.color1");
+    connectAttr -f ($prefix + "_FK_JNT.translate") ($prefix + "_trans_FKIKChoice.color2");
+    connectAttr -f ($prefix + "_trans_FKIKChoice.output") ($prefix + "_main_JNT.translate");
+    
+    //CONNECT BLEND
+    connectAttr -f body_settings_CTRL.FK_IK_blend ($prefix + "_rot_FKIKChoice.blender");
+    connectAttr -f body_settings_CTRL.FK_IK_blend ($prefix + "_trans_FKIKChoice.blender");
+    
+    
+}
+
+
+
+
+
